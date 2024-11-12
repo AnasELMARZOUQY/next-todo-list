@@ -2,38 +2,47 @@
 
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { ModeToggle } from "components/Tooltip/dark-mode"
-
+import { ModeToggle } from "components/Tooltip/dark-mode";
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const [countries, setCountries] = useState([]);
   const [newTodo, setNewTodo] = useState({ user: '', country: '', description: '' });
+  const [isInitialized, setIsInitialized] = useState(false); // Track initial load
 
+  // Load todos from localStorage once when the component mounts
   useEffect(() => {
-    // Fetch countries
+    const savedTodos = JSON.parse(localStorage.getItem('todos') || '[]');
+    if (Array.isArray(savedTodos)) {
+      console.log('Loaded todos from localStorage:', savedTodos);
+      setTodos(savedTodos);
+    }
+    setIsInitialized(true); // Mark as initialized
+  }, []);
+
+  // Fetch countries on initial load
+  useEffect(() => {
     axios.get('https://restcountries.com/v3.1/all')
       .then(response => setCountries(response.data.map(country => country.name.common)))
       .catch(error => console.error('Error fetching countries:', error));
   }, []);
 
+  // Save todos to localStorage only after the initial load
   useEffect(() => {
-    // Load todos from localStorage
-    const savedTodos = JSON.parse(localStorage.getItem('todos')) || [];
-    setTodos(savedTodos);
-  }, []);
-
-  useEffect(() => {
-    // Save todos to localStorage
-    localStorage.setItem('todos', JSON.stringify(todos));
-  }, [todos]);
+    if (isInitialized) {
+      console.log('Saving todos to localStorage:', todos);
+      localStorage.setItem('todos', JSON.stringify(todos));
+    }
+  }, [todos, isInitialized]);
 
   const addTodo = () => {
     if (newTodo.description.length > 120) {
       alert('Description must be 120 characters or less');
       return;
     }
-    setTodos([...todos, newTodo]);
+    const updatedTodos = [...todos, newTodo];
+    console.log('Updated todos:', updatedTodos);
+    setTodos(updatedTodos);
     setNewTodo({ user: '', country: '', description: '' });
     alert('Todo added successfully');
   };
@@ -84,6 +93,6 @@ const TodoList = () => {
       </div>
     </>
   );
-};
+}
 
 export default TodoList;
