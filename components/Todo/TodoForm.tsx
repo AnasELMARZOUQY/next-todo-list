@@ -9,10 +9,10 @@ const TodoForm = ({ addTask }) => {
   useEffect(() => {
     fetch("https://restcountries.com/v3.1/all")
       .then((response) => response.json())
-      .then((data) => setCountries(data.map((country) => country.name.common)))
+      .then((data) => setCountries(data.map((country: { name: { common: any } }) => country.name.common)))
   }, [])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault()
     if (description.length > 120) {
       alert("Description must be less than 120 characters")

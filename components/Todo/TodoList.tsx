@@ -1,4 +1,4 @@
-import { AwaitedReactNode, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react"
+import { Key } from "react"
 
 const TodoList = ({ tasks }) => {
   return (
@@ -9,34 +9,16 @@ const TodoList = ({ tasks }) => {
             user:
               | string
               | number
-              | bigint
-              | boolean
-              | ReactElement<any, string | JSXElementConstructor<any>>
-              | Iterable<ReactNode>
-              | ReactPortal
-              | Promise<AwaitedReactNode>
               | null
               | undefined
             country:
               | string
               | number
-              | bigint
-              | boolean
-              | ReactElement<any, string | JSXElementConstructor<any>>
-              | Iterable<ReactNode>
-              | ReactPortal
-              | Promise<AwaitedReactNode>
               | null
               | undefined
             description:
               | string
               | number
-              | bigint
-              | boolean
-              | ReactElement<any, string | JSXElementConstructor<any>>
-              | Iterable<ReactNode>
-              | ReactPortal
-              | Promise<AwaitedReactNode>
               | null
               | undefined
           },
