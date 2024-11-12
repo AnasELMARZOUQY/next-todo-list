@@ -1,28 +1,28 @@
-import {useEffect , useState  } from 'react';
+import { useEffect, useState } from "react"
 
 const TodoForm = ({ addTask }) => {
-  const [description, setDescription] = useState('');
-  const [user, setUser] = useState('');
-  const [country, setCountry] = useState('');
-  const [countries, setCountries] = useState([]);
+  const [description, setDescription] = useState("")
+  const [user, setUser] = useState("")
+  const [country, setCountry] = useState("")
+  const [countries, setCountries] = useState([])
 
   useEffect(() => {
-    fetch('https://restcountries.com/v3.1/all')
+    fetch("https://restcountries.com/v3.1/all")
       .then((response) => response.json())
-      .then((data) => setCountries(data.map((country) => country.name.common)));
-  }, []);
+      .then((data) => setCountries(data.map((country) => country.name.common)))
+  }, [])
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (description.length > 120) {
-      alert('Description must be less than 120 characters');
-      return;
+      alert("Description must be less than 120 characters")
+      return
     }
-    addTask({ description, user, country });
-    setDescription('');
-    setUser('');
-    setCountry('');
-  };
+    addTask({ description, user, country })
+    setDescription("")
+    setUser("")
+    setCountry("")
+  }
 
   return (
     <form onSubmit={handleSubmit} className="mb-4">
@@ -58,11 +58,11 @@ const TodoForm = ({ addTask }) => {
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
         />
       </div>
-      <button type="submit" className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md">
+      <button type="submit" className="mt-2 rounded-md bg-blue-500 px-4 py-2 text-white">
         Add Task
       </button>
     </form>
-  );
-};
+  )
+}
 
-export default TodoForm;
+export default TodoForm
