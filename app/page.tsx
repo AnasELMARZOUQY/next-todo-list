@@ -3,16 +3,18 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { ModeToggle } from "components/Tooltip/dark-mode";
+import { Todo } from '../types';
+
 
 const TodoList = () => {
-  const [todos, setTodos] = useState([]);
-  const [countries, setCountries] = useState([]);
-  const [newTodo, setNewTodo] = useState({ user: '', country: '', description: '' });
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [countries, setCountries] = useState<string[]>([]);
+  const [newTodo, setNewTodo] = useState<Todo>({ user: '', country: '', description: '' });
   const [isInitialized, setIsInitialized] = useState(false); // Track initial load
 
   // Load todos from localStorage once when the component mounts
   useEffect(() => {
-    const savedTodos = JSON.parse(localStorage.getItem('todos') || '[]');
+    const savedTodos = JSON.parse(localStorage.getItem('todos') || '[]') as Todo[];
     if (Array.isArray(savedTodos)) {
       console.log('Loaded todos from localStorage:', savedTodos);
       setTodos(savedTodos);
@@ -23,7 +25,7 @@ const TodoList = () => {
   // Fetch countries on initial load
   useEffect(() => {
     axios.get('https://restcountries.com/v3.1/all')
-      .then(response => setCountries(response.data.map(country => country.name.common)))
+      .then(response => setCountries(response.data.map((country: { name: { common: any; }; }) => country.name.common)))
       .catch(error => console.error('Error fetching countries:', error));
   }, []);
 
