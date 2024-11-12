@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react"
+import { Country, TodoFormProps } from "types"
 
-const TodoForm = ({ addTask }) => {
+const TodoForm: React.FC<TodoFormProps> = ({ addTask }) => {
   const [description, setDescription] = useState("")
   const [user, setUser] = useState("")
   const [country, setCountry] = useState("")
-  const [countries, setCountries] = useState([])
+  const [countries, setCountries] = useState<string[]>([])
 
   useEffect(() => {
     fetch("https://restcountries.com/v3.1/all")
       .then((response) => response.json())
-      .then((data) => setCountries(data.map((country: { name: { common: any } }) => country.name.common)))
+      .then((data) => {
+        const countriesData = data as Country[];
+        setCountries(countriesData.map((country) => country.name.common));
+      })
   }, [])
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
@@ -18,7 +22,10 @@ const TodoForm = ({ addTask }) => {
       alert("Description must be less than 120 characters")
       return
     }
-    addTask({ description, user, country })
+    addTask({
+      description, user, country,
+      name: ""
+    })
     setDescription("")
     setUser("")
     setCountry("")

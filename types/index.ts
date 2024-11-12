@@ -1,5 +1,7 @@
 export interface Country {
-  name: string
+  name: {
+    common: string;
+  };
 }
 
 export interface User {
@@ -12,4 +14,15 @@ export interface Todo {
   user: string
   country: string
   description: string
+}
+
+export interface Task {
+  name: string
+  description: string;
+  user: string;
+  country: string;
+}
+
+export interface TodoFormProps {
+  addTask: (task: Task) => void;
 }
