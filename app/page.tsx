@@ -1,14 +1,16 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { v4 as uuidv4 } from "uuid" // Import UUID library for unique IDs
 import { ModeToggle } from "components/Tooltip/dark-mode"
 import { Country, Todo } from "../types"
 
 const TodoList = () => {
   const [todos, setTodos] = useState<Todo[]>([])
   const [countries, setCountries] = useState<string[]>([])
-  const [newTodo, setNewTodo] = useState<Todo>({ user: "", country: "", description: "", completed: false })
+  const [newTodo, setNewTodo] = useState<Todo>({ id: "", user: "", country: "", description: "", completed: false })
   const [isInitialized, setIsInitialized] = useState(false)
+  const [filter, setFilter] = useState<string>("all")
 
   // Load todos from localStorage once when the component mounts
   useEffect(() => {
@@ -44,21 +46,24 @@ const TodoList = () => {
       alert("Description must be 120 characters or less")
       return
     }
-    const updatedTodos = [...todos, newTodo]
+    const todoWithId = { ...newTodo, id: uuidv4() } // Assign a unique ID
+    const updatedTodos = [...todos, todoWithId]
     console.log("Updated todos:", updatedTodos)
     setTodos(updatedTodos)
-    setNewTodo({ user: "", country: "", description: "", completed: false })
+    setNewTodo({ id: "", user: "", country: "", description: "", completed: false })
     alert("Todo added successfully")
   }
 
-  const deleteTodo = (index: number) => {
-    const updatedTodos = todos.filter((_, i) => i !== index)
+  const deleteTodo = (id: string) => {
+    const updatedTodos = todos.filter((todo) => todo.id !== id)
     setTodos(updatedTodos)
   }
 
-  const toggleTodo = (index: number) => {
-    const updatedTodos = todos.map((todo, i) => (i === index ? { ...todo, completed: !todo.completed } : todo))
-    setTodos(updatedTodos)
+  const toggleTodo = (id: string) => {
+    setTodos((prevTodos) => {
+      const updatedTodos = prevTodos.map((todo) => (todo.id === id ? { ...todo, completed: !todo.completed } : todo))
+      return updatedTodos
+    })
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -66,6 +71,12 @@ const TodoList = () => {
       addTodo()
     }
   }
+
+  const filteredTodos = todos.filter((todo) => {
+    if (filter === "completed") return todo.completed
+    if (filter === "pending") return !todo.completed
+    return true
+  })
 
   return (
     <>
@@ -107,18 +118,27 @@ const TodoList = () => {
           <button onClick={addTodo} className="bg-blue-500 p-2 text-white">
             Add Todo
           </button>
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="ml-2 bg-yellow-500 p-2 text-white"
+          >
+            <option value="all">All</option>
+            <option value="completed">Completed</option>
+            <option value="pending">Pending</option>
+          </select>
         </div>
         <ul>
-          {todos.map((todo, index) => (
-            <li key={index} className={`mb-2 border p-2 ${todo.completed ? "bg-gray-300" : ""}`}>
+          {filteredTodos.map((todo) => (
+            <li key={todo.id} className={`mb-2 border p-2 ${todo.completed ? "bg-gray-300" : ""}`}>
               <strong>User:</strong> {todo.user} <br />
               <strong>Country:</strong> {todo.country} <br />
               <strong>Description:</strong> {todo.description}
               <br />
-              <button onClick={() => toggleTodo(index)} className="mr-2 bg-green-500 p-2 text-white">
+              <button onClick={() => toggleTodo(todo.id)} className="mr-2 bg-green-500 p-2 text-white">
                 {todo.completed ? "Uncheck" : "Check"}
               </button>
-              <button onClick={() => deleteTodo(index)} className="bg-red-500 p-2 text-white">
+              <button onClick={() => deleteTodo(todo.id)} className="bg-red-500 p-2 text-white">
                 Delete
               </button>
             </li>

@@ -11,6 +11,7 @@ export interface User {
 }
 
 export interface Todo {
+  id: string
   user: string
   country: string
   description: string
