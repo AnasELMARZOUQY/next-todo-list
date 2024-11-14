@@ -42,8 +42,8 @@ const TodoList = () => {
   }, [todos, isInitialized])
 
   const addTodo = () => {
-    if (newTodo.description.length > 120) {
-      alert("Description must be 120 characters or less")
+    if (!newTodo.user || !newTodo.country || !newTodo.description) {
+      alert("Please fill in all fields before adding a todo.")
       return
     }
     const todoWithId = { ...newTodo, id: uuidv4() } // Assign a unique ID
