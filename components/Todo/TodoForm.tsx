@@ -12,10 +12,13 @@ const TodoForm: React.FC<TodoFormProps> = ({ addTask }) => {
       .then((response) => response.json())
       .then((data) => {
         const countriesData = data as Country[];
-        setCountries(countriesData.map((country) => country.name.common));
+        const sortedCountries = countriesData
+          .map((country) => country.name.common)
+          .sort();
+        setCountries(sortedCountries);
       })
   }, [])
-
+  
   const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault()
     if (description.length > 120) {

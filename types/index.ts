@@ -14,6 +14,7 @@ export interface Todo {
   user: string
   country: string
   description: string
+  completed: boolean;
 }
 
 export interface Task {
