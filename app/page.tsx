@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { useEffect, useState } from "react"
 import { v4 as uuidv4 } from "uuid" // Import UUID library for unique IDs
 import { ModeToggle } from "components/Tooltip/dark-mode"
