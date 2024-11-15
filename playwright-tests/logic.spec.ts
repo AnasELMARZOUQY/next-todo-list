@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test"
+import { test, expect, Page } from "@playwright/test"
 
 test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:3000")
@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 })
 
 // Helper function to add a new todo item with delays and verification
-async function addTodoItem(page, description = "Test Todo Description") {
+async function addTodoItem(page:Page, description = "Test Todo Description") {
   // Wait for form fields to be ready
   await page.waitForSelector('input[placeholder="User"]')
   await page.fill('input[placeholder="User"]', "Test User")
