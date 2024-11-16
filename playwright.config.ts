@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test"
 
 export default defineConfig({
-  testDir: "./tests", // Directory where your tests are located
+  testDir: "./playwright-tests", // Directory where your tests are located
   timeout: 30000, // Maximum time one test can run for
   retries: 2, // Number of retries on failure
   use: {

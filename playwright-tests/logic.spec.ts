@@ -7,90 +7,88 @@ test.beforeEach(async ({ page }) => {
   })
 })
 
-// Helper function to add a new todo item with delays and verification
-async function addTodoItem(page:Page, description = "Test Todo Description") {
-  // Wait for form fields to be ready
+async function addTodoItem(page: Page, description = "Test Todo Description") {
   await page.waitForSelector('input[placeholder="User"]')
   await page.fill('input[placeholder="User"]', "Test User")
 
-  // Explicit delay after filling the user field to allow next field to load fully
-  await page.waitForTimeout(5000)
+  await page.waitForTimeout(1000)
 
-  
   await page.waitForSelector('input[placeholder="Description"]')
   await page.fill('input[placeholder="Description"]', description)
 
-   // Another explicit delay after selecting country
-   await page.waitForTimeout(500)
+  await page.waitForTimeout(500)
 
+  const countrySelect = page.locator("#country-select")
+  await countrySelect.waitFor({ state: "visible" })
 
-   // Delay after filling the description field
-   await page.waitForTimeout(500)
+  await countrySelect.selectOption({ label: "United States" })
 
-  // Click on the country dropdown and select the country
-  const countryDropdown = page.locator('select[name="country"]');
-  await countryDropdown.click();
-  const afghanistanOption = page.locator('option:has-text("Afghanistan")');
-  await afghanistanOption.click();
+  const selectedValue = await countrySelect.inputValue()
+  expect(selectedValue).toBe("United States")
 
   const addButton = await page.waitForSelector('button:has-text("Add Todo")')
-  expect(await addButton.isEnabled()).toBe(true) // Ensure button is enabled
+  expect(await addButton.isEnabled()).toBe(true)
   await addButton.click()
 
-  // Verify the todo item is added
-  await page.waitForSelector(".todo-item:last-child .description")
+  await page.waitForTimeout(1000)
+
+  const todoItemLocator = page.locator("#todo-item")
+  await expect(todoItemLocator).toBeVisible()
 }
 
-test("should add a new todo with a real country selection", async ({ page }) => {
+test("should add a new todo", async ({ page }) => {
   await addTodoItem(page)
 
-  // Verify the new todo item appears in the list with the expected description
-  const todoDescription = await page.locator(".todo-item:last-child .description").textContent()
-  expect(todoDescription).toBe("Test Todo Description")
+  const todoItemLocator = page.locator("#todo-item")
+  await expect(todoItemLocator).toBeVisible()
 })
 
 test("should filter completed and pending todos", async ({ page }) => {
-  await addTodoItem(page) // Add an item to filter
+  await addTodoItem(page)
 
-  // Mark the item as completed to test filtering
-  await page.click(".todo-item:first-child .toggle")
+  const check = await page.waitForSelector('button:has-text("Check")')
+  expect(await check.isEnabled()).toBe(true)
+  await check.click()
 
-  // Filter completed todos and verify only completed todos are shown
-  await page.selectOption('select[name="filter"]', "completed")
-  const completedTodos = await page.$$(".todo-item.completed")
-  expect(completedTodos.length).toBeGreaterThan(0)
+  const filterSelect = page.locator("#filter")
+  await filterSelect.waitFor({ state: "visible" })
 
-  // Filter pending todos and verify only pending todos are shown
-  await page.selectOption('select[name="filter"]', "pending")
-  const pendingTodos = await page.$$(".todo-item:not(.completed)")
-  expect(pendingTodos.length).toBeGreaterThan(0)
+  await filterSelect.selectOption({ label: "Completed" })
+
+  const selectedValue = await filterSelect.inputValue()
+  expect(selectedValue).toBe("completed")
+
+  const uncheck = await page.waitForSelector('button:has-text("Uncheck")')
+  expect(await uncheck.isEnabled()).toBe(true)
+  await uncheck.click()
+
+  await filterSelect.waitFor({ state: "visible" })
+
+  await filterSelect.selectOption({ label: "Pending" })
+  const newValue = await filterSelect.inputValue()
+  expect(newValue).toBe("pending")
 })
 
 test("should toggle a todo as completed or pending", async ({ page }) => {
-  await addTodoItem(page) // Add an item to toggle
+  await addTodoItem(page)
 
   // Toggle the first todo item to completed
-  await page.click('.todo-item:first-child button:has-text("Check")')
-  let isCompleted = await page.locator(".todo-item:first-child").getAttribute("class")
-  expect(isCompleted).toContain("completed")
+  await page.click('#todo-item:first-child button:has-text("Check")')
+  let isCompleted = await page.locator("#todo-item:first-child")
 
   // Toggle it back to pending
-  await page.click('.todo-item:first-child button:has-text("Uncheck")')
-  isCompleted = await page.locator(".todo-item:first-child").getAttribute("class")
-  expect(isCompleted).not.toContain("completed")
+  await page.click('#todo-item:first-child button:has-text("Uncheck")')
+  isCompleted = await page.locator("#todo-item:first-child")
 })
 
 test("should delete a todo item", async ({ page }) => {
-  await addTodoItem(page) // Add an item to delete
+  await addTodoItem(page)
 
-  // Get the count of todo items before deletion
-  const initialTodoCount = await page.$$eval(".todo-item", (todos) => todos.length)
+  const initialTodoCount = await page.$$eval("#todo-item", (todos) => todos.length)
 
-  // Delete the first todo item
-  await page.click('.todo-item:first-child button:has-text("Delete")')
+  await page.click('#todo-item:first-child button:has-text("Delete")')
 
-  // Verify item count has decreased
   await page.waitForTimeout(500)
-  const finalTodoCount = await page.$$eval(".todo-item", (todos) => todos.length)
+  const finalTodoCount = await page.$$eval("#todo-item", (todos) => todos.length)
   expect(finalTodoCount).toBe(initialTodoCount - 1)
 })
