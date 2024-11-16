@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { useEffect, useState } from "react"
 import { v4 as uuidv4 } from "uuid" // Import UUID library for unique IDs
 import { ModeToggle } from "components/Tooltip/dark-mode"
@@ -95,6 +96,8 @@ const TodoList = () => {
             className="mr-2 border p-2"
           />
           <select
+            id="country-select"
+            name="country"
             value={newTodo.country}
             onChange={(e) => setNewTodo({ ...newTodo, country: e.target.value })}
             onKeyDown={handleKeyDown}
@@ -119,6 +122,7 @@ const TodoList = () => {
             Add Todo
           </button>
           <select
+            id="filter"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             className="ml-2 bg-yellow-500 p-2 text-white"
@@ -130,10 +134,11 @@ const TodoList = () => {
         </div>
         <ul>
           {filteredTodos.map((todo) => (
-            <li key={todo.id} className={`mb-2 border p-2 ${todo.completed ? "bg-gray-300" : ""}`}>
+            <li id="todo-item" key={todo.id} className={`mb-2 border p-2 ${todo.completed ? "bg-gray-300" : ""}`}>
               <strong>User:</strong> {todo.user} <br />
               <strong>Country:</strong> {todo.country} <br />
-              <strong>Description:</strong> {todo.description}
+              <strong>Description:</strong>
+              {todo.description}
               <br />
               <button onClick={() => toggleTodo(todo.id)} className="mr-2 bg-green-500 p-2 text-white">
                 {todo.completed ? "Uncheck" : "Check"}

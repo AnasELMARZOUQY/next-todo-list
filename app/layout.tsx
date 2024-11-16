@@ -1,3 +1,4 @@
+import React from "react";
 import "styles/tailwind.css"
 import { ThemeProvider } from "../components/Tooltip/theme-provider"
 
